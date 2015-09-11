@@ -16,6 +16,7 @@ void error(const char *msg)
 int main(int argc, char *argv[])
 {
     int sockfd, portno, n;
+    /* sockaddr_*in* for internet */
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
@@ -25,6 +26,9 @@ int main(int argc, char *argv[])
        exit(0);
     }
     portno = atoi(argv[2]);
+
+    /* Create an IPv4 socket with type SOCK_STREAM, a "sequenced, reliable,
+     * two-way, connection-based byte stream" */
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) 
         error("ERROR opening socket");
@@ -33,14 +37,19 @@ int main(int argc, char *argv[])
         fprintf(stderr,"ERROR, no such host\n");
         exit(0);
     }
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, 
-         (char *)&serv_addr.sin_addr.s_addr,
-         server->h_length);
-    serv_addr.sin_port = htons(portno);
+
+    memset((char *) &serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET; /* IPv4 */
+    /* Copy server's IPv4 address from hostent struct to serv_addr struct. */
+    memcpy((char *)&serv_addr.sin_addr.s_addr,
+            (char *)server->h_addr,
+            server->h_length);
+    serv_addr.sin_port = htons(portno); /* port */
+
+    /* Connect to server at serv_addr */
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
         error("ERROR connecting");
+
     printf("Please enter the message: ");
     bzero(buffer,256);
     fgets(buffer,255,stdin);

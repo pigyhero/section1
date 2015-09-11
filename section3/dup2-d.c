@@ -5,16 +5,17 @@
     Paul Krzyzanowski
 */
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 void runcmd(int fd, char **cmd);
 
 int
 main(int argc, char **argv)
 {
-    int pid, status;
     int newfd;  /* new file descriptor */
     char *cmd[] = { "/bin/ls", "-al", "/", 0 };
 
@@ -42,7 +43,7 @@ main(int argc, char **argv)
 void
 runcmd(int fd, char **cmd)
 {
-    int status; 
+    int status;
 
     switch (fork()) {
     case 0: /* child */

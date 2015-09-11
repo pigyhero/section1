@@ -1,4 +1,4 @@
-
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -6,7 +6,6 @@
 int
 main(int argc, char **argv)
 {
-    int pid, status;
     int newfd;  /* new file descriptor */
     char *cmd[] = { "/bin/ls", "-al", "/", 0 };
 
@@ -19,7 +18,7 @@ main(int argc, char **argv)
         exit(1);
     }
     printf("writing output of the command %s to \"%s\"\n", cmd[0], argv[1]);
-    dup2(newfd, 1); 
+    dup2(newfd, 1);
     execvp(cmd[0], cmd);
     perror(cmd[0]);     /* execvp failed */
     exit(1);
